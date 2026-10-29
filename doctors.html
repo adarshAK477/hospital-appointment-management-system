@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Find a Doctor{% endblock %}
+{% block content %}
+<h1>Find a doctor</h1>
+<form method="get" class="filters">
+  <input name="q" placeholder="Search by name or qualification" value="{{ qtext }}">
+  <select name="department" data-autosubmit>
+    <option value="0">All departments</option>
+    {% for d in depts %}<option value="{{ d.id }}" {{ 'selected' if dept == d.id }}>{{ d.name }}</option>{% endfor %}
+  </select>
+  <button class="btn" type="submit">Search</button>
+  <a class="btn ghost" href="{{ url_for('doctors') }}">Reset</a>
+</form>
+
+{% if not docs %}<div class="card">No doctors match your search.</div>{% endif %}
+<div class="grid">
+{% for d in docs %}
+  <div class="card">
+    <h3>{{ d.name }}</h3>
+    <span class="badge blue">{{ d.dept }}</span>
+    <p class="muted">{{ d.qualification }} · {{ d.experience_years }} yrs experience</p>
+    <p><small><b>Days:</b> {{ d.work_days.replace(',', ', ') }}<br>
+       <b>Hours:</b> {{ d.start_time|fmt_time }} – {{ d.end_time|fmt_time }}</small></p>
+    <a class="btn small" href="{{ url_for('book', department=d.department_id, doctor=d.id) }}">Book appointment</a>
+  </div>
+{% endfor %}
+</div>
+{% endblock %}

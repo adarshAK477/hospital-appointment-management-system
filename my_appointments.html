@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}My Appointments{% endblock %}
+{% block content %}
+<div class="between"><h1>My appointments</h1><a class="btn" href="{{ url_for('book') }}">New booking</a></div>
+{% if not rows %}
+  <div class="card">You have no appointments yet. <a href="{{ url_for('book') }}">Book your first one</a>.</div>
+{% else %}
+<div class="table-wrap">
+<table>
+  <thead><tr><th>#</th><th>Date</th><th>Time</th><th>Doctor</th><th>Department</th><th>Reason</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td>{{ r.id }}</td>
+      <td>{{ r.appointment_date|fmt_date }}</td>
+      <td>{{ r.appointment_time|fmt_time }}</td>
+      <td>{{ r.doctor }}</td>
+      <td>{{ r.dept }}</td>
+      <td>{{ r.reason }}</td>
+      <td><span class="badge {{ r.status|badge }}">{{ r.status }}</span></td>
+      <td>
+        {% if r.status == 'Booked' and (r.appointment_date ~ ' ' ~ r.appointment_time) > now %}
+          <form method="post" action="{{ url_for('cancel', appt_id=r.id) }}" data-confirm="Cancel this appointment?">
+            <input type="hidden" name="csrf" value="{{ csrf_token }}">
+            <button class="btn small danger" type="submit">Cancel</button>
+          </form>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endif %}
+{% endblock %}

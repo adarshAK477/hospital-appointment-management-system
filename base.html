@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Hospital Appointments{% endblock %} · CareSlot</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+{% macro nav(ep, label) %}<a href="{{ url_for(ep) }}"{% if endpoint == ep %} class="active"{% endif %}>{{ label }}</a>{% endmacro %}
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="{{ url_for('index') }}"><span class="logo">+</span> CareSlot</a>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+    <nav id="nav">
+      {% if user and user.role == 'admin' %}
+        {{ nav('admin_dashboard', 'Dashboard') }}
+        {{ nav('admin_appointments', 'Appointments') }}
+        {{ nav('admin_doctors', 'Doctors') }}
+        {{ nav('admin_departments', 'Departments') }}
+        {{ nav('admin_patients', 'Patients') }}
+        {{ nav('admin_reports', 'Reports') }}
+        {{ nav('admin_logs', 'Logs') }}
+      {% else %}
+        {{ nav('index', 'Home') }}
+        {{ nav('doctors', 'Find a Doctor') }}
+        {% if user %}
+          {{ nav('book', 'Book') }}
+          {{ nav('my_appointments', 'My Appointments') }}
+          {{ nav('notifications', 'Notifications') }}
+        {% endif %}
+      {% endif %}
+      {% if user %}
+        <span class="who">{{ user.name }}</span>
+        <a class="btn small ghost" href="{{ url_for('logout') }}">Log out</a>
+      {% else %}
+        <a class="btn small ghost" href="{{ url_for('login') }}">Log in</a>
+        <a class="btn small" href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  {% for category, message in get_flashed_messages(with_categories=true) %}
+    <div class="flash {{ category }}">{{ message }}</div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="foot">
+  <div class="wrap">CareSlot · Hospital Appointment Management System · Academic prototype. Not for real patient data.</div>
+</footer>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

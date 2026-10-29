@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>Book your hospital appointment online.</h1>
+    <p>Choose a department, pick a doctor, see live time slots and get an instant confirmation. No queues, no paperwork.</p>
+    <div class="row">
+      <a class="btn" href="{{ url_for('book' if user else 'register') }}">Book an appointment</a>
+      <a class="btn ghost" href="{{ url_for('doctors') }}">Find a doctor</a>
+    </div>
+  </div>
+  <div class="hero-card">
+    <div class="stat"><b>{{ doc_count }}</b><span>Doctors</span></div>
+    <div class="stat"><b>{{ depts|length }}</b><span>Departments</span></div>
+    <div class="stat"><b>24/7</b><span>Online booking</span></div>
+  </div>
+</section>
+
+<h2>Departments</h2>
+<div class="grid">
+  {% for d in depts %}
+    <a class="card link" href="{{ url_for('doctors', department=d.id) }}">
+      <h3>{{ d.name }}</h3>
+      <p class="muted">{{ d.description }}</p>
+      <small>{{ d.n }} doctor{{ '' if d.n == 1 else 's' }}</small>
+    </a>
+  {% endfor %}
+</div>
+
+<h2>How it works</h2>
+<ol class="steps">
+  <li><b>Register</b> and log in securely.</li>
+  <li><b>Select</b> a department and doctor.</li>
+  <li><b>Check</b> available time slots.</li>
+  <li><b>Book</b> and receive confirmation by email and SMS.</li>
+  <li><b>Visit</b> the hospital. Staff update your status.</li>
+</ol>
+{% endblock %}

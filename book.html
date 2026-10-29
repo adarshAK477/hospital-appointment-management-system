@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Book Appointment{% endblock %}
+{% block content %}
+<h1>Book an appointment</h1>
+
+<form method="get" class="card form">
+  <div class="cols">
+    <label>1. Department
+      <select name="department" data-autosubmit onchange="this.form.doctor.value='';">
+        <option value="">Select department</option>
+        {% for d in depts %}<option value="{{ d.id }}" {{ 'selected' if dept_id == d.id }}>{{ d.name }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>2. Doctor
+      <select name="doctor" data-autosubmit {{ '' if dept_id else 'disabled' }}>
+        <option value="">Select doctor</option>
+        {% for d in doctors %}<option value="{{ d.id }}" {{ 'selected' if doc_id == d.id }}>{{ d.name }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>3. Date
+      <input type="date" name="date" min="{{ min_date }}" max="{{ max_date }}" value="{{ date_str }}" data-autosubmit {{ '' if doctor else 'disabled' }}>
+    </label>
+  </div>
+  {% if doctor %}
+    <p class="muted">{{ doctor.name }} sees patients on {{ doctor.work_days.replace(',', ', ') }}, {{ doctor.start_time|fmt_time }} – {{ doctor.end_time|fmt_time }}.</p>
+  {% endif %}
+</form>
+
+{% if doctor and valid_date %}
+  <h2>4. Choose a time slot · {{ date_str|fmt_date }}</h2>
+  {% if not slots %}
+    <div class="card">No slots on this date. The doctor does not work on this day. Try another date.</div>
+  {% else %}
+    <form method="post" class="card form">
+      <input type="hidden" name="csrf" value="{{ csrf_token }}">
+      <input type="hidden" name="department" value="{{ dept_id }}">
+      <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+      <input type="hidden" name="date" value="{{ date_str }}">
+      <div class="slots">
+        {% for s in slots %}
+          <label class="slot {{ '' if s.available else 'off' }}">
+            <input type="radio" name="time" value="{{ s.time }}" {{ 'required' if s.available else 'disabled' }}>
+            <span>{{ s.time|fmt_time }}</span>
+          </label>
+        {% endfor %}
+      </div>
+      <label>Reason for visit (optional)
+        <input name="reason" maxlength="250" placeholder="e.g. fever for 3 days">
+      </label>
+      <button class="btn" type="submit">Confirm appointment</button>
+    </form>
+  {% endif %}
+{% elif doctor %}
+  <div class="card muted">Pick a date to see available time slots (up to {{ window }} days ahead).</div>
+{% endif %}
+{% endblock %}

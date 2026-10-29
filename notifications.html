@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<h1>Notifications</h1>
+<p class="muted">Prototype note: messages are stored here instead of being sent through a real email/SMS gateway.</p>
+{% if not rows %}<div class="card">No notifications yet.</div>{% endif %}
+{% for n in rows %}
+  <div class="card notif">
+    <span class="badge {{ 'green' if n.channel == 'SMS' else 'blue' }}">{{ n.channel }}</span>
+    <span>{{ n.message }}</span>
+    <small class="muted">{{ n.created_at|fmt_dt }}</small>
+  </div>
+{% endfor %}
+{% endblock %}
